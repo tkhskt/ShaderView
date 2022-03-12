@@ -1,3 +1,5 @@
 rootProject.name = "ShaderView"
 include ':demo'
 include ':lib'
+include ':ktx'
+include ':processor'

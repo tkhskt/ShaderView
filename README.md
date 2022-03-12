@@ -30,7 +30,7 @@ The advantage of this library that you can use ShaderView in your hierarchy as a
 
 ## How to use it
 
-### Add dependency to the project
+### Add dependency to the projectafd
 
 **Gradle**
 
