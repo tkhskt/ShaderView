@@ -52,4 +52,11 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin"
         android:text="@string/button_advanced_video_playback_shader" />
+
+    <Button
+        android:id="@+id/distortImage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin"
+        android:text="@string/button_distort_image_shader" />
 </LinearLayout>

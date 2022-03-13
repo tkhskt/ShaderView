@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.appspell.shaderview.demo.databinding.ActivityMenuBinding
+import com.appspell.shaderview.demo.distortion.DistortionActivity
 import com.appspell.shaderview.demo.list.ShaderListActivity
 import com.appspell.shaderview.demo.simple.SimpleOnlyXMLShaderActivity
 import com.appspell.shaderview.demo.simple.SimpleShaderActivity
@@ -25,6 +26,7 @@ class MenuActivity : AppCompatActivity() {
         binding.viewPager.setOnClickListener { open(ViewPagerActivity::class.java) }
         binding.simpleVideo.setOnClickListener { open(VideoActivity::class.java) }
         binding.advancedVideo.setOnClickListener { open(VideoAdvancedActivity::class.java) }
+        binding.distortImage.setOnClickListener { open(DistortionActivity::class.java) }
     }
 
     private fun open(cls: Class<*>) = startActivity(Intent(this, cls))

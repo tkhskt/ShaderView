@@ -39,6 +39,9 @@
         <activity
             android:name=".viewpager.ViewPagerActivity"
             android:exported="false" />
+        <activity
+            android:name=".distortion.DistortionActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
