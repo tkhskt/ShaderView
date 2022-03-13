@@ -4,11 +4,11 @@ import com.appspell.shaderview.processor.ClassNames.SHADER_VIEW
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSFile
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
 import com.squareup.kotlinpoet.ksp.writeTo
 import java.util.*
-
 
 @OptIn(KotlinPoetKspPreview::class)
 class ShaderViewExtensionGenerator(
@@ -18,18 +18,20 @@ class ShaderViewExtensionGenerator(
     fun generate(classDeclaration: KSClassDeclaration) {
         val packageName = classDeclaration.packageName.asString()
         val className = classDeclaration.toString()
-        generateShaderViewExtension(packageName, className)
+        generateShaderViewExtension(packageName, className, classDeclaration.containingFile!!)
     }
 
     private fun generateShaderViewExtension(
         packageName: String,
         parameterClassName: String,
+        containingFile: KSFile,
     ) {
         val file = FileSpec.builder(packageName, "ShaderViewExtension")
             .addShaderParametersFunction(parameterClassName)
             .addInitializeFunction(parameterClassName)
             .build()
-        file.writeTo(codeGenerator, Dependencies(false))
+
+        file.writeTo(codeGenerator, Dependencies(false, containingFile))
     }
 
     private fun FileSpec.Builder.addShaderParametersFunction(parameterClassName: String): FileSpec.Builder {
@@ -57,9 +59,9 @@ class ShaderViewExtensionGenerator(
     }
 
     private fun FileSpec.Builder.addInitializeFunction(parameterClassName: String): FileSpec.Builder {
-        val builderClassName = ClassName(packageName, "${parameterClassName}Updater")
+        val updaterClassName = ClassName(packageName, "${parameterClassName}Updater")
         val initializerTypeName = LambdaTypeName.get(
-            receiver = builderClassName,
+            receiver = updaterClassName,
             returnType = Unit::class.asTypeName(),
         )
         addFunction(
@@ -69,7 +71,7 @@ class ShaderViewExtensionGenerator(
                 .addCode(
                     """
                     onDrawFrameListener = { shaderParams ->
-                        val updater = SampleParametersUpdater(shaderParams)
+                        val updater = $updaterClassName(shaderParams)
                         updater.listener()
                     }
                     """.trimIndent()

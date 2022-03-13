@@ -10,4 +10,6 @@ fun ShaderView.initialize(initializer: ShaderBuilder.() -> Unit) {
     fragmentShaderRawResId = builder.fragmentShaderRawResId
     vertexShaderRawResId = builder.vertexShaderRawResId
     onDrawFrameListener = builder.onDrawFrameListener
+    debugMode = builder.debugMode
+    onViewReadyListener = builder.onViewReadyListener
 }

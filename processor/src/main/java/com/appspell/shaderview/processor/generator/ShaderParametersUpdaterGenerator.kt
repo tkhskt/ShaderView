@@ -9,6 +9,7 @@ import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSFile
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
@@ -25,13 +26,19 @@ class ShaderParametersUpdaterGenerator(
         val packageName = classDeclaration.packageName.asString()
         val className = classDeclaration.toString()
         val properties = classDeclaration.getAllProperties()
-        generateShaderParameterUpdater(packageName, className, properties)
+        generateShaderParameterUpdater(
+            packageName,
+            className,
+            properties,
+            classDeclaration.containingFile!!
+        )
     }
 
     private fun generateShaderParameterUpdater(
         packageName: String,
         parameterClassName: String,
         properties: Sequence<KSPropertyDeclaration>,
+        containingFile: KSFile,
     ) {
         val builderClassName = "${parameterClassName}Updater"
         val constructor = FunSpec.constructorBuilder()
@@ -50,7 +57,7 @@ class ShaderParametersUpdaterGenerator(
                     .addFunctions(properties)
                     .build()
             ).build()
-        file.writeTo(codeGenerator, Dependencies(false))
+        file.writeTo(codeGenerator, Dependencies(false, containingFile))
     }
 
     private fun TypeSpec.Builder.addFunctions(properties: Sequence<KSPropertyDeclaration>): TypeSpec.Builder {

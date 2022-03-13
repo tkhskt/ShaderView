@@ -1,7 +1,9 @@
 package com.appspell.shaderview.processor
 
 import com.appspell.shaderview.processor.ClassNames.SHADER_PARAMETERS
-import com.appspell.shaderview.processor.generator.*
+import com.appspell.shaderview.processor.generator.ShaderParametersBuilderGenerator
+import com.appspell.shaderview.processor.generator.ShaderParametersUpdaterGenerator
+import com.appspell.shaderview.processor.generator.ShaderViewExtensionGenerator
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
@@ -15,13 +17,8 @@ class ShaderParametersProcessor(
     private val logger: KSPLogger,
 ) : SymbolProcessor {
 
-    private var invoked = false
-
     @OptIn(KotlinPoetKspPreview::class)
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        if (invoked) {
-            return emptyList()
-        }
         val symbols =
             resolver.getSymbolsWithAnnotation(SHADER_PARAMETERS.canonicalName)
         val shaderParametersBuilderGenerator =
@@ -35,7 +32,6 @@ class ShaderParametersProcessor(
             shaderViewExtensionGenerator.generate(classDeclaration)
             shaderParameterUpdaterGenerator.generate(classDeclaration)
         }
-        invoked = true
         return emptyList()
     }
 
