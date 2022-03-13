@@ -10,6 +10,8 @@ import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSVisitorVoid
+import com.google.devtools.ksp.validate
 import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
 
 class ShaderParametersProcessor(
@@ -21,20 +23,24 @@ class ShaderParametersProcessor(
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val symbols =
             resolver.getSymbolsWithAnnotation(SHADER_PARAMETERS.canonicalName)
-        val shaderParametersBuilderGenerator =
-            ShaderParametersBuilderGenerator(codeGenerator, logger)
-        val shaderViewExtensionGenerator =
-            ShaderViewExtensionGenerator(codeGenerator)
-        val shaderParameterUpdaterGenerator =
-            ShaderParametersUpdaterGenerator(codeGenerator, logger)
-        symbols.filterIsInstance<KSClassDeclaration>().forEach { classDeclaration ->
+        val ret = symbols.filter { !it.validate() }.toList()
+        symbols
+            .filter { it is KSClassDeclaration && it.validate() }
+            .forEach { it.accept(ShaderParametersVisitor(), Unit) }
+        return ret
+    }
+
+    inner class ShaderParametersVisitor : KSVisitorVoid() {
+        override fun visitClassDeclaration(classDeclaration: KSClassDeclaration, data: Unit) {
+            val shaderParametersBuilderGenerator =
+                ShaderParametersBuilderGenerator(codeGenerator, logger)
+            val shaderViewExtensionGenerator =
+                ShaderViewExtensionGenerator(codeGenerator)
+            val shaderParameterUpdaterGenerator =
+                ShaderParametersUpdaterGenerator(codeGenerator, logger)
             shaderParametersBuilderGenerator.generate(classDeclaration)
             shaderViewExtensionGenerator.generate(classDeclaration)
             shaderParameterUpdaterGenerator.generate(classDeclaration)
         }
-        return emptyList()
-    }
-
-    override fun finish() {
     }
 }
