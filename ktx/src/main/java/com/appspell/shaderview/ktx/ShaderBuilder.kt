@@ -7,13 +7,19 @@ import com.appspell.shaderview.gl.shader.GLShader
 
 class ShaderBuilder {
     var onDrawFrameListener: (ShaderParams) -> Unit = {}
+        private set
     var updateContinuously: Boolean = false
+        private set
 
     var fragmentShaderRawResId: Int = R.raw.default_frag
+        private set
     var vertexShaderRawResId: Int = R.raw.quad_vert
+        private set
 
     var onViewReadyListener: ((shader: GLShader) -> Unit)? = null
+        private set
     var debugMode: Boolean = false
+        private set
 
     fun onDrawFrameListener(listener: (ShaderParams) -> Unit) {
         this.onDrawFrameListener = listener
